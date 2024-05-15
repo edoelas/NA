@@ -5,6 +5,8 @@ from Classes.Materials import Materials
 from Classes.TradeOffer import TradeOffer
 from Interfaces.BotInterface import BotInterface
 
+from .helpers.resources import building_costs
+
 
 class EdoBot(BotInterface):
     """
@@ -15,6 +17,8 @@ class EdoBot(BotInterface):
 
     # TODO: P1 
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
+        # print(building_costs)
+        
         answer = random.randint(0, 2)
         if answer:
             if answer == 2:

@@ -16,22 +16,28 @@ class BotManager:
 
     players = []
 
-    def __init__(self, for_test=False):
-        if not for_test:
-            self.first_bot_class = self.import_bot_class_from_input('first')
-            self.second_bot_class = self.import_bot_class_from_input('second')
-            self.third_bot_class = self.import_bot_class_from_input('third')
-            self.fourth_bot_class = self.import_bot_class_from_input('fourth')
-        elif for_test == 'test_específico':
-            self.first_bot_class = AlexPastorBot.AlexPastorBot
-            self.second_bot_class = AlexPastorBot.AlexPastorBot
-            self.third_bot_class = AlexPastorBot.AlexPastorBot
-            self.fourth_bot_class = AlexPastorBot.AlexPastorBot
+    def __init__(self, for_test=False, bots=None):
+        if bots:
+            self.first_bot_class = bots[0]
+            self.second_bot_class = bots[1]
+            self.third_bot_class = bots[2]
+            self.fourth_bot_class = bots[3]
         else:
-            self.first_bot_class = RandomBot.RandomBot
-            self.second_bot_class = RandomBot.RandomBot
-            self.third_bot_class = RandomBot.RandomBot
-            self.fourth_bot_class = RandomBot.RandomBot
+            if not for_test:
+                self.first_bot_class = self.import_bot_class_from_input('first')
+                self.second_bot_class = self.import_bot_class_from_input('second')
+                self.third_bot_class = self.import_bot_class_from_input('third')
+                self.fourth_bot_class = self.import_bot_class_from_input('fourth')
+            elif for_test == 'test_específico':
+                self.first_bot_class = AlexPastorBot.AlexPastorBot
+                self.second_bot_class = AlexPastorBot.AlexPastorBot
+                self.third_bot_class = AlexPastorBot.AlexPastorBot
+                self.fourth_bot_class = AlexPastorBot.AlexPastorBot
+            else:
+                self.first_bot_class = RandomBot.RandomBot
+                self.second_bot_class = RandomBot.RandomBot
+                self.third_bot_class = RandomBot.RandomBot
+                self.fourth_bot_class = RandomBot.RandomBot
 
         self.reset_game_values()
         return

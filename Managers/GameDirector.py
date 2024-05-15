@@ -8,8 +8,8 @@ class GameDirector:
     Clase que se encarga de dirigir la partida, empezarla y acabarla
     """
 
-    def __init__(self, for_test=False):
-        self.game_manager = GameManager(for_test)
+    def __init__(self, for_test=False, bots=None):
+        self.game_manager = GameManager(for_test, bots)
         self.trace_loader = TraceLoader()
         return
 
@@ -248,11 +248,11 @@ class GameDirector:
             game_object['round_' + str(self.game_manager.get_round())], winner = self.round_start(winner)
             self.game_manager.set_round(self.game_manager.get_round() + 1)
 
-        print('Game (' + str(game_number) + ') results')
-        for i in range(4):
-            print('J' + str(i) + ': ' + str(self.game_manager.get_players()[i]['victory_points']) + ' (' +
-                  str(self.game_manager.get_players()[i]['largest_army']) + ')' + ' (' +
-                  str(self.game_manager.get_players()[i]['longest_road']) + ')')
+        # print('Game (' + str(game_number) + ') results')
+        # for i in range(4):
+        #     print('J' + str(i) + ': ' + str(self.game_manager.get_players()[i]['victory_points']) + ' (' +
+        #           str(self.game_manager.get_players()[i]['largest_army']) + ')' + ' (' +
+        #           str(self.game_manager.get_players()[i]['longest_road']) + ')')
 
         self.trace_loader.current_trace["game"] = game_object
         self.trace_loader.export_to_file(game_number)

@@ -1,22 +1,29 @@
 from Managers.GameDirector import GameDirector
+from Bots import RandomBot, AlexPastorBot, EdoBot, AdrianHerasBot
+
+bots_configs = [[RandomBot.RandomBot, AlexPastorBot.AlexPastorBot, EdoBot.EdoBot, AdrianHerasBot.AdrianHerasBot]]
+games_to_play = 10
 
 
 def main():
-    game_director = GameDirector()
-    try:
-        games_to_play = int(input('Number of games to be played: '))
-    except ValueError:
-        games_to_play = 0
-    if isinstance(games_to_play, int) and games_to_play > 0:
+    for bots in bots_configs:
+        game_director = GameDirector(bots = bots)
+        victories = []
         for i in range(games_to_play):
             print('......')
             game_director.game_start(i + 1)
-    else:
-        print('......')
-        print('Invalid quantity')
-    print('------------------------')
+            last_round = list(game_director.trace_loader.current_trace["game"].values())[-1]
+            last_turn = list(last_round.values())[-1]
+            victories.append(list(last_turn["end_turn"]["victory_points"].values()))
+        print('------------------------')
+        print(victories)
+
+
     game_director.trace_loader.export_every_game_to_file()
-    return
+
+    # print percentage of wins of each bot
+    trace = game_director.trace_loader.all_games_trace
+    
 
 
 if __name__ == '__main__':

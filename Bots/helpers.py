@@ -1,6 +1,7 @@
 from Classes.Constants import *
 from Classes.Materials import Materials
 from typing import List
+import random
 
 TOWN = BuildConstants.TOWN
 CITY = BuildConstants.CITY
@@ -49,6 +50,18 @@ def posl(list1):
     """
     return [x if x > 0 else 0 for x in list1]
 
+def index_to_list(index, value = 1):
+    """
+    Converts an index to a list with the value at the index.
+    """
+    return [value if i == index else 0 for i in range(5)]
+
+def wighted_index_choice(weights):
+    """
+    Chooses an index based on the weights.
+    """
+    list = [0] * weights[0] + [1] * weights[1] + [2] * weights[2] + [3] * weights[3] + [4] * weights[4]
+    return random.choice(list)
 
 def material_to_list(materials):
     """
@@ -75,7 +88,7 @@ def excess_materials(owned: Materials, goal_list: List[str]):
     return Materials(*posl(excess))
 
 
-def create_offer(owned: Materials, goal_list: List[str]):
+def create_exchange(owned: Materials, goal_list: List[str]):
     """
     Creates a trade offer based on the owned materials and the desired goals.
     """

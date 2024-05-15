@@ -57,7 +57,7 @@ class EdoBot(BotInterface):
             self.goals = ["build_city"]
 
         self.turn_counter += 1
-        log_turn(self.goals, self.hand.resources, str(self.turn_counter).rjust(3))
+        
 
         if self.goals[0] == "build_city" and not self.board.valid_city_nodes(self.id):
             log_event("Add build_town to goals")
@@ -97,7 +97,7 @@ class EdoBot(BotInterface):
         return None
 
     def on_commerce_phase(self):
-            
+            log_turn(self.goals, self.hand.resources, str(self.turn_counter).rjust(3))
             # TODO: comercion con banca
             # if self.hand.resources.cereal >= 4:
             #     return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
@@ -111,7 +111,21 @@ class EdoBot(BotInterface):
             #     return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
             # return None
 
-            gives, receives = create_offer(self.hand.resources, self.goals[:1])
+            excess, needed = create_exchange(self.hand.resources, self.goals[:1])
+            if sum(material_to_list(excess)) == 0 or sum(material_to_list(needed)) == 0:
+                return None
+            
+            excess = material_to_list(excess)
+            excess_index = wighted_index_choice(excess)
+            gives = index_to_list(excess_index)
+            gives = Materials(*gives)
+
+            needed = material_to_list(needed)
+            needed_index = wighted_index_choice(needed)
+            receives = index_to_list(needed_index)
+            receives = Materials(*receives)
+
+            log_offer(gives, receives)
 
             return TradeOffer(gives, receives)
 

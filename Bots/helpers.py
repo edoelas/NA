@@ -50,6 +50,12 @@ def posl(list1):
     """
     return [x if x > 0 else 0 for x in list1]
 
+def getl (l, idx, default = None):
+    try:
+        return l[idx]
+    except IndexError:
+        return default
+
 def index_to_list(index, value = 1):
     """
     Converts an index to a list with the value at the index.
@@ -72,6 +78,9 @@ def material_to_list(materials):
 
     
 def missing_materials(owned: Materials, wanted: Materials):
+    """
+    Calculates the missing materials based on the owned materials and the desired materials.
+    """
     dif = subl(material_to_list(wanted), material_to_list(owned))
     return Materials(*posl(dif))
 
@@ -101,3 +110,9 @@ def create_exchange(owned: Materials, goal_list: List[str]):
     return excess, needed
 
 
+def goal_distance(owned: Materials, goal: str):
+    """
+    Calculates the distance to the goals based on the owned materials and the desired goal.
+    """
+    needed = missing_materials(owned, goals_costs[goal])
+    return sum(material_to_list(needed))

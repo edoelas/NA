@@ -15,8 +15,7 @@ class TraceLoader:
         relative_path = "..\\Traces"
         traces_path = os.path.join(absolute_path, relative_path)
         if not os.path.exists(traces_path):
-            # os.makedirs(traces_path)
-            pass
+            os.makedirs(traces_path)
 
         # Cogemos el día y hora para ponerle el nombre a la carpeta a crear en trazas
         today = str(datetime.today()).replace(':', '_')
@@ -25,7 +24,7 @@ class TraceLoader:
         absolute_path = os.path.dirname(__file__)
         relative_path = "..\\Traces\\" + today
         self.full_path = os.path.join(absolute_path, relative_path)
-        # os.makedirs(self.full_path)
+        os.makedirs(self.full_path)
         return
 
     def export_to_file(self, game_number):
@@ -35,8 +34,8 @@ class TraceLoader:
         """
 
         json_obj = json.dumps(self.current_trace)
-        # with open(self.full_path + '\\game_' + str(game_number) + '.json', 'w') as outfile:
-        #     outfile.write(json_obj)
+        with open(self.full_path + '\\game_' + str(game_number) + '.json', 'w') as outfile:
+            outfile.write(json_obj)
 
         # Se añade la traza al json con todas las trazas
         self.all_games_trace.append(self.current_trace)
@@ -48,8 +47,8 @@ class TraceLoader:
         :return: None
         """
         json_obj = json.dumps(self.all_games_trace)
-        # with open(self.full_path + '\\games' + '.json', 'w') as outfile:
-        #     outfile.write(json_obj)
+        with open(self.full_path + '\\games' + '.json', 'w') as outfile:
+            outfile.write(json_obj)
 
         # Se resetea la variable una vez se ha exportado
         self.all_games_trace = []

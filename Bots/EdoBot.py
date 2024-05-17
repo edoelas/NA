@@ -18,16 +18,16 @@ class EdoBot(BotInterface):
         super().__init__(bot_id)
         self.turn_counter = 0 # contador de turnos
         self.goals = [ # lista con orden de prioridades de los objetivos inmediatos
-            "build_city",
+            "build_town",
+            "build_town",
             "build_town",
             "build_town",
             "build_city",
-            "build_town",
-            "build_town",
             "build_city",
             "build_city",
             "build_city",
         ]
+        self.traded = False
 
     # TODO: P1 
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
@@ -50,14 +50,18 @@ class EdoBot(BotInterface):
         #     else:
         #         return True
         # else:
-            return False
+            return True
 
     def on_turn_start(self):
+        self.traded = False
+        start_log(str(self.turn_counter))
+        self.turn_counter += 1
+
+        log_materials(self.hand.resources)
+        log_goal(self.goals)
+
         if not self.goals:
             self.goals = ["build_city"]
-
-        self.turn_counter += 1
-        
 
         if self.goals[0] == "build_city" and not self.board.valid_city_nodes(self.id):
             log_event("Add build_town to goals")
@@ -97,47 +101,46 @@ class EdoBot(BotInterface):
         return None
 
     def on_commerce_phase(self):
-            log_turn(self.goals, self.hand.resources, str(self.turn_counter).rjust(3))
-            # TODO: comercion con banca
-            # if self.hand.resources.cereal >= 4:
-            #     return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
-            # if self.hand.resources.mineral >= 4:
-            #     return {'gives': MaterialConstants.MINERAL, 'receives': MaterialConstants.CEREAL}
-            # if self.hand.resources.clay >= 4:
-            #     return {'gives': MaterialConstants.CLAY, 'receives': MaterialConstants.CEREAL}
-            # if self.hand.resources.wood >= 4:
-            #     return {'gives': MaterialConstants.WOOD, 'receives': MaterialConstants.CEREAL}
-            # if self.hand.resources.wool >= 4:
-            #     return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
-            # return None
+        if self.traded:
+            return None
 
-            excess, needed = create_exchange(self.hand.resources, self.goals[:1])
-            if sum(material_to_list(excess)) == 0 or sum(material_to_list(needed)) == 0:
-                return None
-            
-            excess = material_to_list(excess)
-            excess_index = wighted_index_choice(excess)
-            gives = index_to_list(excess_index)
-            gives = Materials(*gives)
+        # TODO: comercion con banca
+        # if self.hand.resources.cereal >= 4:
+        #     return {'gives': MaterialConstants.CEREAL, 'receives': MaterialConstants.MINERAL}
+        # if self.hand.resources.mineral >= 4:
+        #     return {'gives': MaterialConstants.MINERAL, 'receives': MaterialConstants.CEREAL}
+        # if self.hand.resources.clay >= 4:
+        #     return {'gives': MaterialConstants.CLAY, 'receives': MaterialConstants.CEREAL}
+        # if self.hand.resources.wood >= 4:
+        #     return {'gives': MaterialConstants.WOOD, 'receives': MaterialConstants.CEREAL}
+        # if self.hand.resources.wool >= 4:
+        #     return {'gives': MaterialConstants.WOOL, 'receives': MaterialConstants.CEREAL}
+        # return None
 
-            needed = material_to_list(needed)
-            needed_index = wighted_index_choice(needed)
-            receives = index_to_list(needed_index)
-            receives = Materials(*receives)
+        excess, needed = create_exchange(self.hand.resources, self.goals[:1])
+        if sum(material_to_list(excess)) == 0 or sum(material_to_list(needed)) == 0:
+            return None
+        
+        excess = material_to_list(excess)
+        excess_index = wighted_index_choice(excess)
+        gives = index_to_list(excess_index)
+        gives = Materials(*gives)
 
-            log_offer(gives, receives)
+        needed = material_to_list(needed)
+        needed_index = wighted_index_choice(needed)
+        receives = index_to_list(needed_index)
+        receives = Materials(*receives)
 
-            return TradeOffer(gives, receives)
+        log_offer(gives, receives)
+        self.traded = True
+        return TradeOffer(gives, receives)
 
     def on_build_phase(self, board_instance):
         self.board = board_instance
 
-        if not self.goals:
-            self.goals = ["build_city"]
-
         goal = self.goals[0]
         
-        if goal == "build_town" and self.hand.resources.has_this_more_materials(goals_costs[goal]):
+        if goal == "build_town" and self.hand.resources.has_this_more_materials('town'):
             valid_nodes = self.board.valid_town_nodes(self.id)
             if len(valid_nodes):
                 log_event("Building town")
@@ -146,7 +149,7 @@ class EdoBot(BotInterface):
                 self.goals.remove(goal)
                 return {'building': BuildConstants.TOWN, 'node_id': valid_nodes[town_node]}
             
-        elif goal == "build_city" and self.hand.resources.has_this_more_materials(goals_costs[goal]):
+        elif goal == "build_city" and self.hand.resources.has_this_more_materials('city'):
             valid_nodes = self.board.valid_city_nodes(self.id)
             # TODO: mejorar selección
             if len(valid_nodes):
@@ -155,7 +158,7 @@ class EdoBot(BotInterface):
                 self.goals.remove(goal)
                 return {'building': BuildConstants.CITY, 'node_id': valid_nodes[city_node]}
             
-        elif goal == "build_road" and self.hand.resources.has_this_more_materials(goals_costs[goal]):
+        elif goal == "build_road" and self.hand.resources.has_this_more_materials('road'):
             valid_nodes = self.board.valid_road_nodes(self.id)
             # TODO: mejorar selección
             if len(valid_nodes):
@@ -166,7 +169,7 @@ class EdoBot(BotInterface):
                         'node_id': valid_nodes[road_node]['starting_node'],
                         'road_to': valid_nodes[road_node]['finishing_node']}
 
-        elif goal == "buy_card" and self.hand.resources.has_this_more_materials(goals_costs[goal]):
+        elif goal == "buy_card" and self.hand.resources.has_this_more_materials('card'):
             log_event("Buying card")
             self.goals.remove(goal)
             return {'building': BuildConstants.CARD}

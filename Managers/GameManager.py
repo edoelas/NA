@@ -185,8 +185,8 @@ class GameManager:
             return False
 
         # Si receiver o giver no tiene materiales se le ignora
-        if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives) and
-                giver['resources'].resources.has_this_more_materials(trade_offer.gives)):
+        if (receiver['resources'].resources.has_this_more_materials(trade_offer.receives, receiver) and
+                giver['resources'].resources.has_this_more_materials(trade_offer.gives, giver)):
 
             materials = ['cereal', 'mineral', 'clay', 'wood', 'wool']
 
@@ -816,7 +816,7 @@ class GameManager:
             commerce_phase_object['harbor_trade'] = False
 
             if self.bot_manager.players[player_id]['resources'].resources.has_this_more_materials(
-                    commerce_response.gives):
+                    commerce_response.gives, self.bot_manager.players[player_id]):
                 commerce_phase_object['inviable'] = False
                 answer_object = self.send_trade_to_everyone(commerce_response)
                 commerce_phase_object['answers'] = answer_object

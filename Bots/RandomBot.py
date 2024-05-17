@@ -14,6 +14,7 @@ class RandomBot(BotInterface):
         super().__init__(bot_id)
 
     def on_trade_offer(self, incoming_trade_offer=TradeOffer()):
+        return True
         answer = random.randint(0, 2)
         if answer:
             if answer == 2:
@@ -56,6 +57,7 @@ class RandomBot(BotInterface):
         return None
 
     def on_commerce_phase(self):
+        return None
         if len(self.development_cards_hand.check_hand()) and random.randint(0, 1):
             return self.development_cards_hand.select_card_by_id(self.development_cards_hand.hand[0].id)
 
